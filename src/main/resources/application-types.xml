@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="Book_json" format="json">
+      <types:shape format="weave" example="metadata_files/Book.json"><![CDATA[%dw 2.0
+
+type Book_json = {|
+  inventory: {|
+    book: {|
+      category: String, 
+      title: String, 
+      author: String, 
+      year: String, 
+      price: String
+    |}, 
+    magazine: {|
+      category: String, 
+      title: String, 
+      edition: String, 
+      price: String
+    |}
+  |}
+|} {"example": "{\\\"inventory\\\":{\\\"book\\\":{\\\"category\\\":\\\"web\\\",\\\"title\\\":\\\"Learning XML\\\",\\\"author\\\":\\\"Erik T. Ray\\\",\\\"year\\\":\\\"2003\\\",\\\"price\\\":\\\"39.95\\\"},\\\"magazine\\\":{\\\"category\\\":\\\"business\\\",\\\"title\\\":\\\"Time Magazine\\\",\\\"edition\\\":\\\"04-2017\\\",\\\"price\\\":\\\"17.95\\\"}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="Employee_JSON" format="json">
+      <types:shape format="weave" example="metadata_files/Employee.json"><![CDATA[%dw 2.0
+
+type Employee_JSON = {|
+  employees: Array<{|    firstName: String,     lastName: String,     job: String,     age: Number {"typeId": "int"},     createdDate: String  |}>
+|} {"example": "{\\\"employees\\\":[{\\\"firstName\\\":\\\"Joshua\\\",\\\"lastName\\\":\\\"Erney\\\",\\\"job\\\":\\\"Programmer\\\",\\\"age\\\":27,\\\"createdDate\\\":\\\"2019\\/07\\/27\\\"},{\\\"firstName\\\":\\\"Mary\\\",\\\"lastName\\\":\\\"Smith\\\",\\\"job\\\":\\\"Data Analyst\\\",\\\"age\\\":32,\\\"createdDate\\\":\\\"2018\\/07\\/17\\\"}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="person_csv" format="csv">
+      <types:shape format="weave" example="metadata_files/person.csv"><![CDATA[%dw 2.0
+
+type person_csv = Array<{|  id: String,   name: String,   age: String,   gender: String|}>
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="Emp_with_emails" format="json">
+      <types:shape format="weave" example="metadata_files/Employee_with_Emails.json"><![CDATA[%dw 2.0
+
+type Emp_with_emails = {|
+  employees: Array<{|    firstName: String,     lastName: String,     job: String,     age: Number {"typeId": "int"},     createdDate: String,     emails: Array<Array<String>>
+  |}>
+|} {"example": "{\\\"employees\\\":[{\\\"firstName\\\":\\\"Joshua\\\",\\\"lastName\\\":\\\"Erney\\\",\\\"job\\\":\\\"Programmer\\\",\\\"age\\\":27,\\\"createdDate\\\":\\\"2019\\/07\\/27\\\",\\\"emails\\\":[[\\\"Josh@email.com\\\"],[\\\"Josh111@email.com\\\"]]},{\\\"firstName\\\":\\\"Mary\\\",\\\"lastName\\\":\\\"Smith\\\",\\\"job\\\":\\\"Data Analyst\\\",\\\"age\\\":32,\\\"createdDate\\\":\\\"2018\\/07\\/17\\\",\\\"emails\\\":[[\\\"Mary@email.com\\\"],[\\\"Mary111@email.com\\\"]]}]}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#77a03d42-7267-4b1b-809f-298b4e8693c6">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Employee_JSON"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7af859f6-72a9-4240-bf47-d367e31ea31c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Employee_JSON"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4bdda035-9255-4384-b502-3b0eb3ef03a1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Employee_JSON"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ca6da188-ebcb-4800-90dd-700a8f1daf65">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="person_csv"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#0e698545-0893-4274-9da1-e3de1caf807d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Emp_with_emails"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

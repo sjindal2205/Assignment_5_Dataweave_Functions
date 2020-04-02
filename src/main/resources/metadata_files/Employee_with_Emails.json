@@ -1,0 +1,26 @@
+{
+    "employees": [
+        {
+            "firstName": "Joshua",
+            "lastName": "Erney",
+            "job": "Programmer",
+            "age": 27,
+            "createdDate": "2019/07/27",
+            "emails": [
+                ["Josh@email.com"],
+                ["Josh111@email.com"]
+            ]
+        },
+        {
+            "firstName": "Mary",
+            "lastName": "Smith",
+            "job": "Data Analyst",
+            "age": 32,
+            "createdDate": "2018/07/17",
+            "emails": [
+                ["Mary@email.com"],
+                ["Mary111@email.com"]
+            ]
+        }
+    ]
+}

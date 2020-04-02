@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="JSON_to_XML" doc:id="b67b0a44-7f8d-4b9b-aaf2-fb66c2887d4e" >
+		<http:listener doc:name="Listener" doc:id="959242ae-210e-4f1e-82d4-9d208fbccc87" path="/map/jsonToXml" allowedMethods="POST" config-ref="HTTP_Listener_config1"/>
+		<ee:transform doc:name="Transform Message" doc:id="77a03d42-7267-4b1b-809f-298b4e8693c6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+
+/* Converting employee jSON to XML
+ * Adding one more field - salary  
+ * */ 
+ 
+ var salary = (jobType: String) -> 
+ 	if(jobType == 'Programmer')
+ 	20000
+ 	else if(jobType == 'Data Analyst')
+ 	25000
+ 	else
+ 	15000
+ 
+---
+
+Employees: {(payload.employees map(object, index) -> {
+	Employee: {
+		name: object.name,
+		job: object.job replace "Programmer" with "Programmer - MuleSoft",
+		age: object.age,
+		salary: salary(object.job)
+	}
+	
+}
+)}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="String_Funct_Custom_Funct_Local_Var_DATE_Format" doc:id="f9e33ef0-fcd5-4ee4-a2c2-9c90eda5ef68" >
+		<http:listener doc:name="Listener" doc:id="1070f039-c859-4657-9878-4cb31e1a87d1" config-ref="HTTP_Listener_config1" path="/stringFunc"/>
+		<ee:transform doc:name="Transform Message" doc:id="4bdda035-9255-4384-b502-3b0eb3ef03a1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+/*
+ * Used Dataweave functions are -
+ * 1) custom functions
+ * 2) String upper() and replace functions
+ * 3) Date format functions
+ * 4) Use of local variables with "using" keyword
+ * 5) declaring global variables.
+ * 
+ */
+
+var checkEmploymentStatus = (dateVal) -> 
+	if(dateVal == null or isEmpty(dateVal) )
+	  "UnEmployed"
+	else
+	  "Employed"
+
+var employment = checkEmploymentStatus(dateVal: String)
+
+fun concat(fname,lname) = upper(fname) ++" " ++ upper(lname)
+---
+
+using(Employees= payload.employees map (object, index) -> {
+	
+	Name: concat(object.firstName, object.lastName),
+	Joining_date: object.createdDate as Date {format: "yyyy/MM/dd"} as String {format: "MMM dd, yyyy"},
+	Joining_Time: now() as DateTime as String {format: "yyyy-MM-dd'T'HH:mm:ss"},
+	jobType: object.job replace "Programmer" with "Programmer - MuleSoft", 
+	employment_status: checkEmploymentStatus(object.createdDate)
+
+}
+)Employees]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="CSV_Convertion_to_JSON" doc:id="b3ea3d3c-d66a-429e-ad7b-61faae629ce5" >
+		<http:listener doc:name="Listener" doc:id="c3f872a5-d6ab-428c-893d-2668b4aa032a" config-ref="HTTP_Listener_config1" path="/map/csvToJson"/>
+		<ee:transform doc:name="Transform Message" doc:id="ca6da188-ebcb-4800-90dd-700a8f1daf65" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+output application/xml
+---
+
+Employees: {(payload map(Object,index) -> 
+	Employee:
+	Object mapObject (value, key) -> {
+		(key): value
+	}
+
+)}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="MapObject_Function" doc:id="ee505af2-7dc8-4683-82f0-abd400110b83" >
+		<http:listener doc:name="Listener" doc:id="4f58aea4-1ee4-496b-bf77-bd8693bbbf51" config-ref="HTTP_Listener_config1" path="/mapObjectFunc"/>
+		<ee:transform doc:name="Transform Message" doc:id="7af859f6-72a9-4240-bf47-d367e31ea31c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+payload.employees map((object, index) -> 
+	Employee:
+	object mapObject(value, key) ->{
+		
+		(upper(key)) : upper(value)
+	}
+
+)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="Flatten_Func_Join_By_Func" doc:id="08694e02-76b5-4541-897b-30a3f8ffa80b" >
+		<http:listener doc:name="Listener" doc:id="797577ef-b68b-4246-ad3c-eb592b1030ae" config-ref="HTTP_Listener_config1" path="/flattenJoinFunc"/>
+		<ee:transform doc:name="Transform Message" doc:id="0e698545-0893-4274-9da1-e3de1caf807d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+
+fun getName(fname, lname) = fname ++ " " ++ lname
+---
+payload.employees map(object, index) ->
+{
+	Name: getName(object.firstName, object.lastName),
+	email: flatten(object.emails) joinBy " , "
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

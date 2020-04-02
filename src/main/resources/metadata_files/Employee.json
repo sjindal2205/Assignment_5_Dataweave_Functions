@@ -1,0 +1,18 @@
+{
+    "employees": [
+        {
+            "firstName": "Joshua",
+            "lastName": "Erney",
+            "job": "Programmer",
+            "age": 27,
+            "createdDate": "2019/07/27"
+        },
+        {
+            "firstName": "Mary",
+            "lastName": "Smith",
+            "job": "Data Analyst",
+            "age": 32,
+            "createdDate": "2018/07/17"
+        }
+    ]
+}
